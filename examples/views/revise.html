@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+  <title>FirstPage</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="../style/revise.css">
+</head>
+<body>
+  <div class = "container">
+    <div class = 'top'>
+      <caption><h1>정보수정</h1></caption>
+      <form action="/del_process" method="POST"  class = "btn_delfrom" onsubmit="return chse()">
+        <input type="hidden" name="email" value =<%=post.email%>>
+        <input type="submit" class="btn_del" value="회원탈퇴">
+      </form>
+    </div>
+    <form action="/main" method="POST" onsubmit="return check()">
+      <table>
+        <tr>
+          <td class='col1'>아이디</td>
+          <td class='col2'><input type="text" id ="email" name="email" readonly value=<%=post.email%>></td>
+        </tr>
+        <tr>
+          <td class='col1'>이전 비밀번호</td>
+          <td class='col2'>
+            <input id="pwd" type="password">
+            <input type = "button" class= overlapPW value ="확인">
+            <p id="output" name="output" readonly="readonly"></p>
+          </td>
+        </tr>
+        <tr>
+          <td class='col1'>비밀번호 수정</td>
+          <td class='col2'><input type="password" name="password" placeholder='비밀번호' required></td>
+        </tr>
+        <tr>
+          <td class='col1'>사용자 이름</td>
+          <td class='col2'><input type="text" name="name" required value=<%=post.name%>></td>
+        </tr>
+        <tr>
+          <td class='col1'>휴대전화</td>
+          <td class='col2'><input type="number" name="phone" required value=<%=post.phone%>></td>
+        </tr>
+      </table>
+      
+      <div class ="btns">
+        
+        <input type="submit" value="수정하기" class="btn_btm">
+      </div>
+    </form>
+    <form action="/main" method="POST">
+      <input type="hidden" name="email" value=<%=post.email%>>
+      <input type="submit" value="수정취소"  class="btn_btm">
+    </form>
+  </div>
+ 
+  <script>
+		document.querySelector('.overlapPW').addEventListener('click', function() {
+      console.log("revise 클릭")
+			sendAjax('http://localhost:8080/check', email.value, pwd.value);
+		})
+
+		function sendAjax(url, valueEmail, valuePW, ) {
+			valueEmail = JSON.stringify({'email' : valueEmail,'pwd' : valuePW, 'state' : "pwd"});         //객체 ->문자열
+	
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', url, true);
+			xhr.setRequestHeader('Content-type', 'application/json');
+			xhr.send(valueEmail);
+			xhr.addEventListener('load', function(){
+				var result = JSON.parse(xhr.responseText);
+				if (result.result === 'ok') document.getElementById('output').innerText = "비밀번호가 일치합니다.";
+				else document.getElementById('output').innerText = "비밀번호가 일치하지 않습니다.";
+			});
+		}
+    function check(){
+      var textM = document.getElementById('output').innerText;
+      if(textM === "비밀번호가 일치합니다."){
+        alert("수정완료");
+        return true;
+      }
+      else{
+        alert('비밀번호를 확인해주세요');
+        return false;
+      }
+    }
+	  function chse(){
+      let TF = confirm('탈퇴하시겠습니까?');
+      if(TF)  return true;
+      else return false;
+    }
+    </script>
+</body>
+</html>

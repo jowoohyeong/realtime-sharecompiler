@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Main</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="../style/main.css">
+  <link rel="stylesheet" type="text/css" href="../style/userlist.css">
+</head>
+
+<body>
+  <div class='container'>
+    <div class="group_nav">
+      <h1 class='btn_form' style="width:300px;">Waiting Room</h1>
+      <nav>
+        <ul class='ulnav'>
+          <li>
+            <form action="/compile" method="POST" class="btn_form">
+              <input type="hidden" name="email" value=<%=post.email%>>
+              <input type="submit" class="btn_nav" value="코딩 연습">
+            </form>
+          </li>
+          <li>
+            <form action="/codemirror" method="POST" class="btn_form">
+              <input type="hidden" id='email' name="email" value=<%=post.email%>>
+              <input type="submit" class="btn_nav" value="코드 공유">
+            </form>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class='Main_div'>
+
+      <div class="chat_div">
+        <div class='chat'>
+          <div class="header">Chat</div>
+          <div class="log">
+            <ul class='ul_list'>
+
+            </ul>
+          </div>
+          <div class='input_div'>
+            <textarea id='input_msg' placeholder="메세지를 입력하세요"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="Right_div">
+
+        <div class='login_div'>
+          <form action="/revise" method="POST">
+            <input type="hidden" name="email" value=<%=post.email%>>
+            <%=post.name%> 님<br>
+              아이디 : <%=post.email%> <br>
+                <input type="submit" value="내 정보" class="btn_right">
+                <a href="/" class="btn_right">로그아웃</a>
+          </form>
+        </div>
+
+        <div class="user_div" style="margin-bottom :30%;">
+          <div class='flex-apply' style="justify-content:center;display:flex;">
+            <div id='userCount'></div>
+            <button class="list_refresh"><img src="../img/refresh.png" style="width:10px; height: 10px;"></button>
+          </div>
+          <textarea class="userLog" readonly></textarea>
+        </div>
+
+      </div>
+    </div>
+    <div class="chat_format">
+      <ul>
+        <li>
+          <div class="sender">
+            <span></span>
+          </div>
+          <div class="message">
+            <span></span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="//code.jquery.com/jquery.min.js"></script>
+  <script>    //유저목록 새로고침 
+    document.querySelector('.list_refresh').addEventListener('click', function () {
+      var email = `<%=post.email %>`;
+      sendAjax(email, 'main');
+    });
+  </script>
+
+  <script>
+    $(document).ready(function () {
+      var users = {};
+      var user_count = 0;
+      const webSocket = new WebSocket("ws://localhost:8080");
+
+      webSocket.addEventListener('open', function (event) { });
+      webSocket.addEventListener('close', function (event) { });
+    })
+  </script>
+  <script>
+      
+      (function () {
+        let cliname = `<%=post.email%>`
+        const chatLog = document.querySelector('.log');
+        const input_msg = document.querySelector('#input_msg');
+        const ul_list = $('.ul_list');
+
+        let ws;
+        
+        function init() {
+          if (ws) {
+            ws.onerror = ws.onopen = ws.onclose = null;
+            ws.close();
+          }
+          ws = new WebSocket('ws://localhost:7007');
+          ws.onopen = () => {
+            const data = createdata("ENTER", cliname, `${cliname}님이 입장하셨습니다`);
+            ws.send(JSON.stringify(data));
+            document.querySelector("button[class=list_refresh]").click();
+          }
+          ws.onmessage = data => {
+            let data2 = JSON.parse(data.data);
+            if (data2.content === "ENTER") Notice(data2.message);
+            else if (data2.content === "OUT") Notice(data2.message);
+            else if (data2.senderName !== cliname) sendMessage("left", data2.senderName, data2.message)
+            else sendMessage("right", data2.senderName, data2.message);
+          }
+        }
+        $('#input_msg').keydown(function (e) {
+          if (e.keyCode === 13) {
+            if (!ws) return;
+            const data = createdata("message", cliname, input_msg.value);
+            ws.send(JSON.stringify(data));
+          }
+        });
+        function createdata(content, name, msg) {
+          return data = {
+            "content": content,
+            "senderName": name,
+            "message": msg
+          }
+        }
+        function Notice(message) {
+          ul_list.append("<li>" + message + "</li>")
+          ul_list.scrollTop = chatLog.scrollHeight;
+          document.querySelector("button[class=list_refresh]").click();
+        }
+        function createMessageTag(LR, senderName, message) {
+          let chatLi = $('.chat_format ul li').clone();
+          chatLi.addClass(LR);
+          chatLi.find('.sender span').text(senderName);
+          chatLi.find('.message span').text(message);
+          return chatLi;
+        }
+        function sendMessage(LR, name, message) {
+          const chatLi = createMessageTag(LR, name, message);
+          $('.ul_list').append(chatLi);
+          $('#input_msg').val('');
+          $('div.log').scrollTop($('div.log').prop('scrollHeight'));
+        }
+        init();
+      })();
+  </script>
+  <script src="../build/userlist.js"></script>
+  <script src="../build/sound.js"></script>
+</body>
+
+</html>

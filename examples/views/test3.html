@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="ko">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    .container {
+  display: flex;
+  height: 200px;
+}
+
+.container>div {
+  flex: 1;
+  background: 
+    linear-gradient(red, red) left/15px 100% no-repeat, 
+    blue;
+  padding-left: 15px;
+  color: #fff;
+  transition: 0.5s all;
+}
+
+.container:hover>div {
+  min-width: 15px;
+  padding: 0;
+  flex: 0;
+  writing-mode: vertical-lr;
+}
+
+.container>div:hover {
+  flex: 1;
+  padding-left: 15px;
+  writing-mode: initial;
+}
+</style>
+<body>
+    <div class="container">
+        <div>HTML</div>
+        <div>CSS</div>
+        <div>JS</div>
+      </div>
+</body>
+</html>

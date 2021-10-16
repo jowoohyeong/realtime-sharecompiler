@@ -1,0 +1,18 @@
+.user_div{
+    display : block;
+    text-align: center;
+    width:  95%;
+    height : 100px;
+    margin: 5px;
+    padding : 5px 0px;
+}
+.userLog{
+    width: 90%;
+    height : 100px;
+    resize : none;
+    font-size : 15px;
+    padding : 5px 5px;
+    margin-top: 10px;
+    line-height: 22px;
+    font-family: "Apple SD Gothic Neo", "맑은 고딕", "Malgun Gothic", 돋움, dotum, sans-serif
+}
