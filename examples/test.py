@@ -1,13 +1,8 @@
 #python
-def add(a, b):
-  return a+b
-def sub(first, second):
-  return first-second
-def div(first, second):
-  return first/second
-def mul(first, second):
-  return first*second
-
+def add(a, b):  return a+b
+def sub(first, second):  return first-second
+def div(first, second):  return first/second
+def mul(first, second):  return first*second
 
 print("num input : ", end=" ");
 a = int(input())
@@ -27,6 +22,7 @@ for c in alphabets:
     print(c, end="-")
 
 print('\n')
+
 b = []
 c = [1, 2, 3] 
 
@@ -44,8 +40,6 @@ print(1 != 1)
 print(1 != 2)
 print(1 > 1)
 print(1 < 2)
-print(1 >= 1)
-print(1 >= 2)
 print(1 <= 2, '\n')
 
 for a in range(0, 5, 1):

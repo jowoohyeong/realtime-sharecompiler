@@ -1,8 +1,8 @@
 <!doctype html>
 <html>
 <head>
-  <title>로그인</title>
-  <meta charset="utf-8">
+  <title>LOGIN</title>
+  <meta charset="utf-8">  
 </head>
 <style>
     body{
@@ -118,12 +118,10 @@
       document.querySelector("input[class=btn]").click();
     }
      let cnt =0;
-    function sendAjax(callback){
+    function sendAjax(){ 
       let url = 'http://localhost:8080/check'; 
-      let valueEmail = email.value;
-      let valuePw = pwd.value;
      
-			var msg = JSON.stringify({'email' : valueEmail, 'pwd' :valuePw , 'state' : "login"});         //객체 ->문자열
+			var msg = JSON.stringify({'email' : email.value, 'pwd' :pwd.value , 'state' : "login"});         //객체 ->문자열
       
 			var xhr = new XMLHttpRequest();
 			xhr.open('POST', url, true);
@@ -131,7 +129,7 @@
 			xhr.send(msg);
 			xhr.addEventListener('load', function(){
 				var result = JSON.parse(xhr.responseText);
-        console.log(result.result);
+
         if (result.result !== 'ok'){
           document.getElementById('output').innerText = "가입하지 않은 아이디이거나, 잘못된 비밀번호입니다.";
         }

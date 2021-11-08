@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>BOARD</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+</head>
+<style>
+    body {  font-family: 'Open Sans', sans-serif; background: #ddd;}
+    .view { width: 70px; text-align: center; }
+    .date { text-align: center; width: 100px; }
+    .thead{ background-color: gray; color:white;}
+    .container{ margin : auto; width:800px; margin-top:50px;}
+    .group_nav{
+        padding-top:30px;
+        position: relative;
+        width: 100%;
+        height: 140px;
+        display: inline-block;
+        background-color:#ddd;
+        text-align: center;
+    }
+    .btmLine{
+        display: flex;
+        justify-content: space-between;
+    }
+    .btn{
+        height: 40px;
+        margin-bottom: 20px;
+        background : gray;
+        display: block;
+        text-align: center;
+        font-weight: bold;
+        color: white;
+        border: 3px solid gray;
+    }
+    .nonbtn {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+    }
+</style>
+
+<body>
+    <div class='container'>
+        <div class="group_nav">
+            <h1>
+                <form action="/board" method="POST">
+                    <input type="hidden" name="email" value=<%=post.email%>>
+                    <input type="submit" class="nonbtn" value="BOARD"style='font-weight:bold' id="board">
+                </form>
+            </h1>
+        </div>
+        <div style='float: right; font-weight: bold;'>아이디 : <%=post.email%></div>
+        <table class="board-table table table-sm border-bottom" id='boardlist'>
+            <thead class='thead'>
+                <tr>
+                    <th scope='col'>제목</th>
+                    <th scope='col' class='view'>작성자</th>
+                    <th scope='col' class='date'>등록일</th>
+                </tr>
+            </thead>
+            <!-- <input type ="number" value ="1" id="page"> -->
+            <tbody>
+                <script>
+
+                </script>
+                <%
+                for(var i=0; i<list.length; i++){ 
+                    var data=list[i];
+                    if(!data) break;
+                %>
+                    <tr>
+                        <td>
+                            <form action="/board/show" method="POST">
+                                <input type="hidden" name="title" value="<%=data.title%>">
+                                <input type="hidden" name="email" value=<%=data.email%>>
+                                <input type="hidden" name="user" value=<%=post.email%>>
+                                <input type="hidden" name="time" value=<%=data.time%>>
+                                <input type="submit" class='nonbtn' value="<%=data.title%>">
+                            </form>
+                         </td>
+                        <td class='view'><%=data.email%></td>
+                        <td class='date'><%=data.time%></td>
+                    </tr>
+                <%}%>
+            </tbody>
+        </table>
+        
+        <!-- <div style="display:flex; gap:10px; justify-content:center">
+            <button id ="pre" class='btn'>이전</button>
+            <button id ="aft" class='btn'>다음</button>
+        </div> -->
+        <div class='btmLine'>
+            <form action="/main" method="POST">
+                <input type="hidden" name="email" value=<%=post.email%>>
+                <input type="hidden" name="page" value="codemirror">
+                <input type="submit" value="home" class="btn">
+            </form>
+            <form action="/board/new" method="POST" >
+                <input type="hidden" name="email" value=<%=post.email%>>
+                <input type="submit" value="글쓰기" class="btn">
+            </form>
+            
+        </div>
+
+    </div>
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script>
+        // $('#pre').on('click', function(){
+        //     let a= document.getElementById('page').value;
+        //     if(a*1===1)   return;
+        //     document.getElementById('page').value= a*1 - 1;
+            
+        // });
+        // $('#aft').on('click', function(){
+        //     document.getElementById('page').value= document.getElementById('page').value*1 + 1;
+        // });
+    </script>
+</body>
+
+</html>

@@ -1,24 +1,37 @@
-let ccode = `/*C*/\n#include<stdio.h>\nint main(){\n\tprintf("Hell0 C W0rld");\n}`;
-let cppcode = `/*C++*/\n#include <iostream>\nusing namespace std;\n\nint main() {\n\tcout << "Hell0 C++ World!";\n\treturn 0;\n}`;
-let javacode = `/*java*/\nclass Main{\n\tpublic static void main(String[] args) {\n\t\tSystem.out.println("Hell0 java W0rld!");\n\t}\n}`;
-let jscode = `/*javascript*/\nconsole.log("Hello javascript")`;
-let pycode = `#python\nprint("Hell0 Python! ")`;
 let curlang = language.value;
-
+let codeObj = initializeCode();
 var editorElem = document.getElementById('textarea');
 var editor = new CodeMirror(editorElem, {
     lineNumbers: true,
+    autofocus: true,
+    tabSize: 2,
 });
 editor.setOption('mode', 'text/x-csrc');
-editor.setValue(ccode);
-
+editor.setValue(codeObj['C']);
 document.querySelector('.ajaxsend').addEventListener('click', function () {
     sendAjaxCode(editor.getValue(), language.value, $('#input').val());
 });
-
+document.querySelector('#register').addEventListener('click', function () {
+    var title = prompt("글 제목을 입력하세요");
+    if (title !== null) sendAjaxWrite($('#user_id').text(), title, editor.getValue())
+});
+function sendAjaxWrite(email, title, body) {
+    let url = 'http://localhost:8080/compile/register';
+    var data = { 'email': email, 'title': title, 'body': body, 'process': "new" };
+    data = JSON.stringify(data);
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', url, true);            //server.js로 보내기
+    xhr.setRequestHeader('Content-type', 'application/json');
+    xhr.send(data);
+    xhr.addEventListener('load', function () {
+        var result = JSON.parse(xhr.responseText);
+        if (result.result != 'ok') return;
+        else return;
+    });
+}
 function sendAjaxCode(code, lang, input) {
     let url = 'http://localhost:8080/form_receive';
-    var data = { 'code': code, 'language': lang,  'input': input};
+    var data = { 'code': code, 'language': lang, 'input': input };
     data = JSON.stringify(data);
     var xhr = new XMLHttpRequest();
     xhr.open('POST', url, true);            //server.js로 보내기
@@ -30,39 +43,55 @@ function sendAjaxCode(code, lang, input) {
         document.getElementById('output').value = result.output;
     });
 }
-document.getElementById('language').addEventListener('change', (event) => {
-    if (curlang === "C") ccode = editor.getValue();
-    else if (curlang === "C++") cppcode = editor.getValue();
-    else if (curlang === "java") javacode = editor.getValue();
-    else if (curlang === "javascript") jscode = editor.getValue();
-    else if (curlang === "python") pycode = editor.getValue();
+function sendAjaxSave(email, codeObj) {
+    let url = 'http://localhost:8080/code_save';
+    console.log(email)
+    var data = { 'email': email, 'codepackage': codeObj };
 
-    if (language.value === "C") {
-        editor.setOption('mode', 'text/x-csrc');
-        editor.setValue(ccode);
-    }
-    else if (language.value === "C++") {
-        editor.setOption('mode', 'text/x-c++src');
-        editor.setValue(cppcode);
-    }
-    else if (language.value === "java") {
-        editor.setOption('mode', 'text/x-java');
-        editor.setValue(javacode)
-    }
-    else if (language.value === "javascript") {
-        editor.setOption('mode', 'text/javascript');
-        editor.setValue(jscode);
-    }
-    else if (language.value === "python") {
-        editor.setOption('mode', 'text/x-python');
-        editor.setValue(pycode);
-    }
+    data = JSON.stringify(data);         //객체 ->문자열
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader('Content-type', 'application/json');
+    xhr.send(data);
+    xhr.addEventListener('load', function () {
+        var result = JSON.parse(xhr.responseText);
+        let resultObj = JSON.parse(result);
+        if (resultObj) {
+            console.log(resultObj)
+            initializeCode(resultObj)
+        }
+    });
+}
+document.getElementById('language').addEventListener('change', (event) => {
+    codeObj[curlang] = editor.getValue();
+    editor.setValue(codeObj[language.value]);
+    if (language.value === "C") editor.setOption('mode', 'text/x-csrc');
+    else if (language.value === "C++") editor.setOption('mode', 'text/x-c++src');
+    else if (language.value === "java") editor.setOption('mode', 'text/x-java');
+    else if (language.value === "javascript") editor.setOption('mode', 'text/javascript');
+    else if (language.value === "python") editor.setOption('mode', 'text/x-python');
     curlang = language.value;
 })
 document.getElementById('wrap').addEventListener('click', () => {
-    if (document.getElementById('wrap').checked) {
-        editor.setOption('lineWrapping', true);
-    } else {
+    if (editor.options.lineWrapping) {
         editor.setOption('lineWrapping', false);
+        $('#wrap').text("자동 줄바꿈")
+    } else {
+        editor.setOption('lineWrapping', true);
+        $('#wrap').text("자동 줄바꿈 취소")
     }
 })
+document.querySelector('#codeSave').addEventListener('click', function () {
+    codeObj[language.value] = editor.getValue();
+    let TF = confirm(`모든 코드를 저장합니다.`);
+    if (TF) sendAjaxSave($('#user_id').text(), codeObj)
+});
+function initializeCode() {
+    return {
+        'C': $("#C").text(),
+        'C++': $("#Cpp").text(),
+        'java': $("#java").text(),
+        'javascript': $("#javascript").text(),
+        'python': $("#python").text()
+    }
+}

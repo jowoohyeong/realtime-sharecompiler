@@ -1,58 +1,32 @@
-button,.btn_nav,.btn_right, input#input_submit{
-    cursor: pointer;
-}
-.container{
-    margin : auto;
-    width:900px;
-    margin-top:50px;
-}
-body{
-    background: #ddd;
-    text-align: center;
-}
-a{
-    font-size: 15px;
-}
-.Main_div{
-    width : 100%;
-    height: 550px;
-}
+button,.xxbtn,.btn_right{ cursor: pointer; }
+.container{ margin : auto; width:800px; margin-top:50px;}
+body{ background: #ddd; text-align: center;}
+a{ font-size: 15px; }
+.Main_div{ width : 100%; height: 550px; }
 .group_nav{
     position: relative;
     width: 100%;
-    height: 150px;
-    margin: auto;
+    height: 140px;
+    display: inline-block;
     background-color:#ddd;
+    text-align: center;
+    vertical-align: middle;
 }
-.btn_form{
-    display:inline-block;
-    width : 100px;
-    padding: 20px 10px;
-
-}
+.ulnav{ gap : 20px; list-style:none; display: flex; }
 nav{ display: flex; justify-content: space-between; }
-.btn_nav{
-    width:100px;
+.xxbtn:hover { background: #ddd; color:black}      
+.menu_div{ display: block; width:100%; }
+.xxbtn{
+    width:100%;
     height: 50px;
+    margin-bottom: 20px;
+    background : gray;
     display: block;
     text-align: center;
-    margin: .25rem;
     padding: .5rem 1rem;
     font-weight: bold;
     color: white;
-
     border: 3px solid gray;
-    background : gray;
-}
-.btn_nav:hover { background: #ddd; color:black}      
-
-
-#input_submit{
-    width:50px;
-    color: #fff;
-    border-radius: 18px;
-    background-color: #007bff;
-    border-color: #007bff;
 }
 .Right_div{
     display: flex;
@@ -72,6 +46,7 @@ nav{ display: flex; justify-content: space-between; }
     margin: 5px;
     text-align: right;
     background-color: #ddd;
+    
 }
 .btn_right{
     border : none;
@@ -98,8 +73,7 @@ h1 {
     flex-grow: 1;
     margin-right:60px;
 }
-.ulnav{ gap : 20px; list-style:none; display: flex; }
-nav { display: inline-block; vertical-align: middle;}  
+nav { display: inline-block; }  
 li{    list-style: none; display:block;}
 html {    box-sizing: border-box;}
 
@@ -109,7 +83,7 @@ html {    box-sizing: border-box;}
     margin: auto;
     height: 100%; 
     background-color:#ddd;
-    width:70%;
+    width:80%;
 }
 .chat .log{
     box-sizing: border-box;

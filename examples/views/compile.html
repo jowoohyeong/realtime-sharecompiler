@@ -2,9 +2,9 @@
 <html lang="ko">
 
 <head>
-    <title>코드연습</title>
+    <title>PRACTICE</title>
     <link rel="stylesheet" href="/codemirror.css">
-    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="../style/style.css">
 
 </head>
 
@@ -12,31 +12,43 @@
     <div class='container'>
         <div class='title'>
             <h1>코딩연습</h1>
-            <div>아이디 : <strong id = 'email'><%=post.email%></strong></div>
+            <div>아이디 : <strong id='user_id'><%=post.email%></strong></div><br>
             <form action="/main" method="POST">
                 <input type="hidden" name="email" value=<%=post.email%>>
-                <input type="submit" value="home" class="btn_back">
+                <input type="submit" value="home" class="btn barbtn">
             </form>
+                
+            
+            <div id="C" style="display:none"><%=data.C%></div>
+            <div id="Cpp" style="display:none"><%=data['C++']%></div>
+            <div id="java" style="display:none"><%=data.java%></div>
+            <div id="javascript" style="display:none"><%=data.javascript%>></div>
+            <div id="python" style="display:none"><%=data.python%></div>
+            
         </div>
 
         <div class='main'>
             <div class='codetext'>
                 <div class='codetext_bar'>
-                    <select id="language" name="language">
+                    <div style="display: flex; gap:20px">
+                        <button onclick="upfs()" class="btn barbtn">UP</button>
+                        <button onclick="downfs()" class="btn barbtn">DOWN</button>
+                        <button id='wrap' class="btn barbtn">자동 줄바꿈</button>
+                      </div>
+                      
+                      <select id="language" name="language" style="margin-bottom: 5px;">
                         <option name="1" selected>C</option>
                         <option name="2">C++</option>
                         <option name="3">java</option>
                         <option name="4">javascript</option>
                         <option name="5">python</option>
-                    </select>
-                    <div>
-                        줄바꿈<input type="checkbox" id='wrap'>
-                    </div>
-                    <div>
-                        <button>불러오기</button>
-                        <button>저장하기</button>
-                    </div>
-                    <input id="run" type="button" value="RUN" class="ajaxsend">
+                      </select>
+            
+                      <div style="display: flex; gap:20px">
+                        <button id='register' class="btn barbtn">등록</button>
+                        <button id='codeSave' class="btn barbtn">저장</button>
+                        <input id="run" type="button" value="RUN" class="ajaxsend barbtn">
+                      </div>
                 </div>
                 <div id="textarea" class='code'></div>
                 <!--입력-->
@@ -48,9 +60,9 @@
                     <div>customer input<input type="checkbox" id='inputBox' checked></div>
                 </div>
                 <div class='inout'>
-                    <textarea id="input"></textarea>
+                    <textarea id="input" class="result"></textarea>
                     <div class="resizer2" style='height: 8px; min-height: 8px;'></div>
-                    <textarea id="output" name="output" readonly="readonly"></textarea>
+                    <textarea id="output" class="result" readonly="readonly"></textarea>
                 </div>
             </div>
 
@@ -63,7 +75,6 @@
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="../build/compile.js"></script>
     <script src="../build/div_control.js"></script>
-
 </body>
 
 </html>

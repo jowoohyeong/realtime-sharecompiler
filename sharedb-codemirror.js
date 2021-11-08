@@ -3,8 +3,7 @@
  * @param {CodeMirror} codeMirror - a CodeMirror 편집 instance
  * @param {Object} options - required. Options object with the following keys:
  *    - onOp(op): required. 
- * a function to call when a text OT op is produced by the editor. 
- * Typically will call `submitOp` on the ShareDB doc.
+ * 편집기에서 텍스트 OT op가 생성될 때 호출하는 함수, 일반적으로 ShareDB doc에서 'submitOp'을 호출
    When doing so, note that it's important to pass `{source: this}` as the second argument to `submitOp` so that `ShareDBCodeMirror` can identify its own ops when rebroadcasted.
  * verbose: optional. true일 경우, debug messages가 console에 출력.
  */
@@ -48,6 +47,7 @@ ShareDBCodeMirror.attachDocToCodeMirror = function(shareDoc, codeMirror, options
       shareDoc.removeListener('op', shareDBOpListener);
     },
     onOp: function(op) {
+     // key = language.value;
       var docOp = [{p: [key], t: 'text', o: op}];
 
       if (verbose) {    //입력할 때 사용자 1에게만 
@@ -60,9 +60,10 @@ ShareDBCodeMirror.attachDocToCodeMirror = function(shareDoc, codeMirror, options
   });
 
   function shareDBOpListener(op, source) {
-    if(!source && typeof(op[0].o[0])==='object'){   //1006-selectbox 변경사항있을 시 이전 코드 저장 
+    if((source ===false) && typeof(op[0].o[0])==='object'){   //1006-selectbox 변경사항있을 시 이전 코드 저장 
       codeObj[curlang] = codeMirror.getValue();
-    }
+      shareDoc.data[curlang] = codeMirror.getValue();     //ss
+    } 
     for (var i = 0; i < op.length; i++) {
       var opPart = op[i];
 
@@ -73,11 +74,11 @@ ShareDBCodeMirror.attachDocToCodeMirror = function(shareDoc, codeMirror, options
         console.log('ShareDBCodeMirror: ignoring op because of path or type:', opPart);
       }
     }
-    if(!source && typeof(op[0].o[0])==='object'){	//selectbox 변경사항o -> codemirror 변경
+    if((source ===false) && typeof(op[0].o[0])==='object'){	//selectbox 변경사항o -> codemirror 변경
+
       let code = codeMirror.getValue();
       let splited = code.split(/\n/, 1);
       let target = splited[0];
-      
       if (target === "/*C*/") {
         document.getElementById('language')[0].selected = true;
         codeMirror.setOption('mode', 'text/x-csrc');
@@ -99,7 +100,6 @@ ShareDBCodeMirror.attachDocToCodeMirror = function(shareDoc, codeMirror, options
       }
       curlang = language.value;
     }
-    
     shareDBCodeMirror.assertValue(shareDoc.data[key]);
   }
 
@@ -119,26 +119,24 @@ ShareDBCodeMirror.attachDocToCodeMirror = function(shareDoc, codeMirror, options
       }
       var newDoc = {};
       newDoc[key] = '';
-      shareDoc.create(newDoc);
-      var FirstTimecon= true;     
-      var outputFirst, iputFirst;
-      if(shareDoc.collection==='output' || shareDoc.collection=== 'input'){
-        outputFirst = true; 
-        iputFirst = true;
+      var outp, inp;
+      if(key==='output' || key === 'input') {
+        outp = true, inp = true;
       }
+      shareDoc.create(newDoc);
+      var FirstTimecon= true;
     }
 
     if (verbose) {                      //클라이언트 각각 첫 문서 접속 //첫 접속일때만 선언
       var Firstcon = true;
     }
-    console.log(shareDoc.data);
     shareDBCodeMirror.setValue(shareDoc.data[key] || '');
-
-    if(outputFirst || iputFirst) codeMirror.setValue('');
+        
+    if(outp || inp) codeMirror.setValue('');
     else if(FirstTimecon){
       codeMirror.setOption('mode', 'text/x-csrc');
       codeMirror.setValue(codeObj['C']);
-    }else if(Firstcon && !outputFirst){                     //첫 접속 - 선택박스 클릭
+    }else if(Firstcon){                     //첫 접속 - 선택박스 클릭
       let code = codeMirror.getValue();
       let splited = code.split(/\n/, 1);
       let target = splited[0];
@@ -163,7 +161,6 @@ ShareDBCodeMirror.attachDocToCodeMirror = function(shareDoc, codeMirror, options
       }
       curlang = language.value;
     }
-    
     if (callback) {
       callback(null);
     }
@@ -172,7 +169,6 @@ ShareDBCodeMirror.attachDocToCodeMirror = function(shareDoc, codeMirror, options
   return shareDBCodeMirror;
 };
 
-// CodeMirror instance의 변경 사항을 수신하기 시작한다.. 필요하다면 `setValue` 를 호출할 경우에도 이것을 호출합니다.
 ShareDBCodeMirror.prototype.start = function() {
   if (this._started) {
     return;
@@ -203,8 +199,7 @@ ShareDBCodeMirror.prototype.getValue = function() {
   return this.codeMirror.getValue();
 };
 
-/**
- * This should be called periodically with the value from the ShareDB doc to ensure the value in CodeMirror hasn't diverged.
+/**CodeMirror 의 값이 달라지지 않도록 ShareDB doc의 값을 사용하여 주기적으로 호출해야 한다..
  * @return {boolean} 전달된 값이 공유중인 CodeMirror instance와 일치하면 true, false otherwise
  */
 ShareDBCodeMirror.prototype.assertValue = function(expectedValue) {
@@ -216,7 +211,8 @@ ShareDBCodeMirror.prototype.assertValue = function(expectedValue) {
       "Expected Value:\n", expectedValue,
       "\n\nEditor Value:\n", editorValue);
 
-    this._suppressChange = true;
+    this._suppressChange = true; 
+
     this.codeMirror.setValue(expectedValue);
     this._suppressChange = false;
 

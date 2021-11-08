@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>코드공유</title>
+  <title>SHARE</title>
   <link rel="stylesheet" href="/codemirror.css">
   <link rel="stylesheet" href="../style/style.css">
   <link rel="stylesheet" href="../style/userlist.css">
@@ -10,26 +11,36 @@
 <body>
   <div class='container'>
     <div class='title'>
-      <h1>StudyRoom</h1>
+      <button style="border:none; background-color:#ddd; cursor: pointer;" id='ctrl'><h1>StudyRoom</h1></button>
       <span id="status-span"></span>
-      <div>아이디 : <strong id = 'email'><%=post.email%></strong></div>
+      <div>아이디 : <strong id='user_id'><%=post.email%></strong></div></br>
 
       <form action="/main" method="POST">
         <input type="hidden" name="email" value=<%=post.email%>>
-        <input type="submit" value="home"  class="btn">
+        <input type="hidden" name="page" value="codemirror">
+        <input type="submit" value="home" class="btn barbtn">
       </form>
-    
+
       <div class="user_div">
         <div class='flex-apply' style="justify-content:center;display:flex;">
           <div id='userCount'></div>
-          <button class="list_refresh"><img src="../img/refresh.png" style="width:10px; height: 10px;"></button>
+          <button id="list_refresh" class='btn'><img src="../img/refresh.png"
+              style="width:10px; height: 10px;"></button>
         </div>
         <textarea class="userLog" readonly></textarea>
-      </div>
+
+      </div id="ex" style='width:180px;height:40px;'>
     </div>
     <div class='main'>
       <div class='codetext'>
         <div class='codetext_bar'>
+          
+          <div style="display: flex; gap:20px">
+            <button onclick="upfs()" class="btn barbtn">UP</button>
+            <button onclick="downfs()" class="btn barbtn">DOWN</button>
+            <button id='wrap' class="btn barbtn">자동 줄바꿈</button>
+          </div>
+
           <select id="language" name="language" style="margin-bottom: 5px;">
             <option name="1" selected>C</option>
             <option name="2">C++</option>
@@ -37,14 +48,13 @@
             <option name="4">javascript</option>
             <option name="5">python</option>
           </select>
-          <div>
-            줄바꿈<input type="checkbox" id='wrap'>
+
+          <div style="display: flex; gap:20px">
+            <button id='register' class="btn barbtn">등록</button>
+            <button id='codeSave' class="btn barbtn">저장</button>
+            <input id="run" type="button" value="RUN" class="ajaxsend barbtn">
           </div>
-          <div>
-            <button id ='codeLoad' class="btn">불러오기</button>
-            <button id ='codeSave' class="btn">저장하기</button>
-          </div>
-          <input id="run" type="button" value="RUN" class="ajaxsend">
+          
         </div>
         <div id="textarea" class="code"></div>
       </div>
@@ -52,11 +62,11 @@
       <div class='resizer'></div>
       <div class='resulttext'>
         <div class='codetext_bar'>
-          <div>customer input<input type="checkbox" id='inputBox' checked></div>
+          <div>input<input type="checkbox" id='inputBox' checked></div>
         </div>
-        <div class = 'inout'>
+        <div class='inout'>
           <div id="input" class='result'></div>
-          <div class= "resizer2" style='height: 8px; min-height: 8px;'></div>
+          <div class="resizer2" style='height: 8px; min-height: 8px;'></div>
           <div id="output" class='result'></div>
         </div>
       </div>
@@ -66,6 +76,32 @@
   <script src="../build/userlist.js"></script>
   <script src="../build/bundle.js"></script>
   <script src="../build/div_control.js"></script>
+  <script>
+    (function () {
+      let ws;
+      function init() {
+        if (ws) {
+          ws.onerror = ws.onopen = ws.onclose = null;
+          ws.close();
+        }
+        ws = new WebSocket('ws://localhost:8000');
+        ws.onopen = () => {
+          const data = { 'content': "open" }
+          ws.send(JSON.stringify(data));
+          clickAction();
+        }
+        ws.onmessage = data => {
+          let remsg = JSON.parse(data.data);
+          if (remsg.content == "open") clickAction();
+        }
+        ws.onclose = () => { }
+        function clickAction() {
+          document.getElementById("list_refresh").click()
+        }
+      }
+      init()
+    })();
+  </script>
 </body>
 
 </html>

@@ -1,106 +1,32 @@
-<!doctype html>
-<html lang="en">
-
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="initial-scale=1,width=device-width" />
-    <link rel="manifest" href="/manifest.json" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <link rel="shortcut icon" href="https://www.adaface.com/static/img/adaface-logo.png" />
-    <title>Candidate friendly skills assessment tool for 700+ skills</title>
-    <meta name="description"
-        content="Automate first round interviews, get back important engineering time and find the best developers for your role. Get started for free today!" />
-    <link rel="canonical" href="https://www.adaface.com" />
-    <meta name="robots" content="noindex,follow" />
-    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
-    <script src="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.js"></script>
-    <link rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.css" />
-    <script src="https://cdn.auth0.com/js/auth0/9.5.1/auth0.min.js"></script>
-    <script src="https://cdn.auth0.com/js/lock/11.16.0/lock.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.39.0/codemirror.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.39.0/codemirror.css" />
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.41.0/addon/scroll/simplescrollbars.min.css" />
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.46.0/addon/hint/show-hint.min.css" />
-    <link rel="stylesheet" href="https://cdn.firebase.com/libs/firepad/1.4.0/firepad.css" />
-    <script src="https://res.cloudinary.com/adaface/raw/upload/v1552641062/javascript/firepad.min.js"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120271250-1"></script>
-    <script>function gtag() { dataLayer.push(arguments) } window.dataLayer = window.dataLayer || [], gtag("js", new Date), gtag("config", "UA-120271250-1")</script>
-    <script defer="defer" src="https://use.fontawesome.com/releases/v5.0.10/js/all.js"
-        integrity="sha384-slN8GvtUJGnv6ca26v8EzVaR9DC58QEwsIk9q1QXdCU8Yu8ck/tL/5szYlBbqmS+"
-        crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://unpkg.com/react-select@1.2.1/dist/react-select.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css" />
-    <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/nprogress@0.2.0/nprogress.css" />
-    <script>NProgress.configure({ showSpinner: !1 })</script>
-    <script>UPLOADCARE_PUBLIC_KEY = "df2d78bca479a593bb75"</script>
-    <script src="https://ucarecdn.com/libs/widget/3.6.0/uploadcare.full.min.js" charset="utf-8"></script>
-    <script src="https://js.stripe.com/v3/"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css" />
-    <script>var myimages = new Array; function preloadimages() { for (i = 0; i < preloadimages.arguments.length; i++)myimages[i] = new Image, myimages[i].src = preloadimages.arguments[i] } preloadimages("/app/blue_balloon.png", "/app/pink_balloon.png", "/app/light_blue_balloon.png")</script>
-    <style>
-        .walking-animation {
-            position: absolute;
-            width: 177px;
-            height: 160px;
-            left: -177px;
-            bottom: 3.5rem;
-            z-index: 10000000;
-            transition: left 5s cubic-bezier(0, .5, .5, 1)
-        }
-
-        .walking-animation.animation-on {
-            left: calc(100%)
-        }
-
-        .animation-balloon {
-            z-index: 100000;
-            position: absolute;
-            transition: top 7s cubic-bezier(0, .65, .45, 1)
-        }
-
-        #balloon1 {
-            top: 120%;
-            left: 40%;
-            width: 50px
-        }
-
-        #balloon1.enabled-animation {
-            top: calc(-10% - 50px)
-        }
-
-        #balloon2 {
-            top: 140%;
-            left: 60%;
-            width: 100px
-        }
-
-        #balloon2.enabled-animation {
-            top: calc(-50% - 100px)
-        }
-
-        #balloon3 {
-            top: 110%;
-            left: 80%;
-            width: 30px
-        }
-
-        #balloon3.enabled-animation {
-            top: calc(-30% - 30px)
-        }
-    </style>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
 </head>
-
-<body><noscript>If you're seeing this message, that means <strong>JavaScript has been disabled on your browser</strong>,
-        please <strong>enable JS</strong> to make this app work.</noscript>
-    <div id="app"></div>
-    <script src="https://res.cloudinary.com/dxxri2trj/raw/upload/v1600424941/twilio-common.min_v0v1.js"></script>
-    <script src="https://res.cloudinary.com/dxxri2trj/raw/upload/v1600424948/twilio-chat.min_v3v2.js"></script>
-    <script>function startWalkingAnimation() { for (var t = ["/app/blue_balloon.png", "/app/pink_balloon.png", "/app/light_blue_balloon.png"], e = 0; e < t.length; e++) { var n = document.createElement("img"); n.src = t[e], toggleClass(n, "animation-balloon"), n.id = "balloon" + (e + 1), document.body.appendChild(n), function (e) { setTimeout(function () { var t; toggleClass(e, "enabled-animation"), t = e, setTimeout(function () { t.parentNode.removeChild(t) }, 8e3) }, 300) }(n) } } function toggleClass(t, e) { var n = t.className, a = new RegExp("\\b" + e + "\\b"), o = n.match(a); e = e.replace(/\s+/g, ""), t.className = o ? n.replace(a, "") : n + " " + e } var defaultColors = ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"], shape = function (t) { var e = [function (t) { var e = Math.round(10 * (Math.random() + .5)) + "px"; return t.style.width = e, t.style.height = e, t }, function (t) { var e = Math.round(10 * (Math.random() + .5)) + "px"; return t.style.width = e, t.style.height = e, t.style["border-radius"] = "50%", t }, function (t) { var e = "" + Math.round(10 * (Math.random() + .5)), n = t.style["background-color"]; return t.style["background-color"] = "transparent", t.style["border-bottom"] = e + "px solid " + n, t.style["border-left"] = e / 2 + "px solid transparent", t.style["border-right"] = e / 2 + "px solid transparent", t.style.height = 0, t.style.width = e, t }]; return e[Math.floor(Math.random() * e.length)](t) }; function createElements(o, t, r) { return Array.from({ length: t }).map(function (t, e) { var n = document.createElement("div"), a = r[e % r.length]; return n.style["background-color"] = a, n.style.position = "absolute", o.appendChild(shape(n)), n }) } function randomPhysics(t, e, n, a) { var o = t * (Math.PI / 180), r = e * (Math.PI / 180); return { x: 0, y: 0, wobble: 10 * a(), velocity: .5 * n + a() * n, angle2D: -o + (.5 * r - a() * r), angle3D: -Math.PI / 4 + a() * (Math.PI / 2), tiltAngle: a() * Math.PI } } function updateFetti(t, e, n) { t.physics.x += Math.cos(t.physics.angle2D) * t.physics.velocity, t.physics.y += Math.sin(t.physics.angle2D) * t.physics.velocity, t.physics.z += Math.sin(t.physics.angle3D) * t.physics.velocity, t.physics.wobble += .1, t.physics.velocity *= n, t.physics.y += 3, t.physics.tiltAngle += .1; var a = t.physics, o = a.x, r = a.y, i = a.tiltAngle, l = a.wobble, s = "translate3d(" + (o + 10 * Math.cos(l)) + "px, " + (r + 10 * Math.sin(l)) + "px, 0) rotate3d(1, 1, 1, " + i + "rad)"; t.element.style.transform = s, t.element.style.opacity = 1 - e } function animate(e, n, a) { var o = 0; requestAnimationFrame(function t() { n.forEach(function (t) { return updateFetti(t, o / 200, a) }), (o += 1) < 200 ? requestAnimationFrame(t) : n.forEach(function (t) { if (t.element.parentNode === e) return e.removeChild(t.element) }) }) } window.confetti = function (t) { var e = 1 < arguments.length && void 0 !== arguments[1] ? arguments[1] : {}, n = e.angle, a = void 0 === n ? 90 : n, o = e.decay, r = void 0 === o ? .9 : o, i = e.spread, l = void 0 === i ? 45 : i, s = e.startVelocity, c = void 0 === s ? 45 : s, d = e.elementCount, h = void 0 === d ? 50 : d, p = e.colors, u = void 0 === p ? defaultColors : p, y = e.random, m = void 0 === y ? Math.random : y; animate(t, createElements(t, h, u).map(function (t) { return { element: t, physics: randomPhysics(a, l, c, m) } }), r) }</script>
-    <script type="text/javascript" src="/app/main.1dfeaf9954d12d843fa6.js"></script>
+<body>
+<h1><%= title %></h1>
+<a href="/board/write">글쓰기</a>
+<table border="1">
+    <tr>
+        <td>제목</td>
+        <td>조회수</td>
+        <td>등록일</td>
+        <td>등록일</td>
+    </tr>
+    <%
+    for(var i=0; i<rows.length; i++)
+    {
+        var data = rows[i];
+    %>
+    <tr>
+        <td><%=data.name%></td>
+        <td><a href="/board/read/<%=data.idx%>"><%=data.title%></a></td>
+        <td><%=data.hit%></td>
+        <td><%=data.modidate%></td>
+        <td><%=data.regdate%></td>
+    </tr>
+    <%}%>
+</table>
 </body>
-
 </html>
