@@ -53,7 +53,12 @@
         
           <form action="/board" method="POST">
             <input type="hidden" name="email" value=<%=post.email%>>
-            <input type="submit" class="xxbtn" value="게 시 판">
+            <input type="submit" class="xxbtn" value="자유 게시판">
+          </form>
+
+          <form action="/homework" method="POST">
+            <input type="hidden" name="email" value=<%=post.email%>>
+            <input type="submit" class="xxbtn" value="과제 제출">
           </form>
          
         </div>

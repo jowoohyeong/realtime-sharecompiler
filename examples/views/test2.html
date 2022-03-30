@@ -1,32 +1,93 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <title>SUBMIT</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style/show.css">
 </head>
 <body>
-<h1><%= title %></h1>
-<a href="/board/write">글쓰기</a>
-<table border="1">
-    <tr>
-        <td>제목</td>
-        <td>조회수</td>
-        <td>등록일</td>
-        <td>등록일</td>
-    </tr>
-    <%
-    for(var i=0; i<rows.length; i++)
-    {
-        var data = rows[i];
-    %>
-    <tr>
-        <td><%=data.name%></td>
-        <td><a href="/board/read/<%=data.idx%>"><%=data.title%></a></td>
-        <td><%=data.hit%></td>
-        <td><%=data.modidate%></td>
-        <td><%=data.regdate%></td>
-    </tr>
-    <%}%>
-</table>
+<div class="container" style="text-align: center;">
+    <h1 id="one"></h1>
+    <strong id="writer" style="float: right; margin:10px;"></strong>
+    <div>
+        <textarea id="body" rows="20" class="form-control" readonly></textarea>
+        <div id="output">
+            <strong>출력 결과</strong>
+            <textarea rows="5" id="result" class ="form-control" readonly></textarea>
+        </div>
+    </div>
+    
+    <div style="display:flex; gap:30px; justify-content: center; margin-top:10px;">
+        <input type="button" value="삭제" class="btn" onclick="check()?goDelete():null">
+        <input type="button" value="보기" class="btn" id="btnS" onclick="btnClick()">
+        <input type="button" value="닫기" class="btn" onclick="window.close()">
+    </div>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script>
+    var data, SC=false;
+    function getParentText(){
+        data = opener.document.getElementById("ContentObj").value;
+    }
+    $('#output').fadeOut(0.1);
+    getParentText();
+    data = JSON.parse(data);
+    console.log(data);
+    document.getElementById('one').innerHTML= data.title;
+    document.getElementById('writer').innerHTML= "작성자: "+data.email;
+    document.getElementById('body').value= data.body;
+    document.getElementById('result').value= data.output;
+    function check(){
+        let TF=confirm("정말 삭제하시겠습니까?");
+        return TF;
+    }
+    function goDelete(){
+        let url = 'http://localhost:8080/_del';
+        let datalist = data;
+        datalist = JSON.stringify(datalist);
+        
+        var xhr = new XMLHttpRequest();
+        xhr.open('delete', url, true);            //server.js로 보내기
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.send(datalist);
+        xhr.addEventListener('load', function () {
+            var result = JSON.parse(xhr.responseText);
+            if(result.result.deletedCount===1)  opener.parent.location.reload();
+            window.close();
+            return;
+        });
+    }
+    function btnClick(){
+        if(!SC){
+            SC = true;
+            $('#output').fadeIn(0.1);
+            document.getElementById("body").rows = "13";
+            document.getElementById('btnS').value = "취소";
+        }
+        else{
+            SC = false;
+            $('#output').fadeOut(0.1);
+            document.getElementById("body").rows = "20";
+            document.getElementById('btnS').value = "보기";
+        }
+    }
+    $(document).ready(function () {
+        $('#inputBox').change(function () {
+            if (this.checked) {
+                $('#input').fadeIn(0.1);
+                $('.resizer2').fadeIn(0.1);
+
+                $('#output').height('75%-8');
+            }
+            else {
+                $('#input').fadeOut(0.1);
+                $('.resizer2').fadeOut(0.1);
+
+                $('#output').height('100%');
+            }
+        });
+    });
+</script>
 </body>
 </html>

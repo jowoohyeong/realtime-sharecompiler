@@ -1,0 +1,41 @@
+body { font-family: 'Open Sans', sans-serif; background: #ddd; }
+.container { margin: auto; width: 800px; margin-top: 50px; }
+.breadcrumb-item { font-size: 0.8em !important; }
+.ellipsis { display: block; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.board-table { table-layout: fixed; }  
+.board-table .date { width: 100px; }  .post-body { white-space: pre-line; }  
+.post-info { font-size: 0.8em; }
+.btn {
+  height: 40px;
+  margin-bottom: 20px;
+  background: gray;
+  display: block;
+  text-align: center;
+
+  font-weight: bold;
+  color: white;
+  border: 3px solid gray;
+}
+.group_nav {
+  padding-top: 30px;
+  position: relative;
+  width: 100%;
+  height: 140px;
+  display: inline-block;
+  background-color: #ddd;
+  text-align: center;
+}
+
+.btmLine {
+  display: flex;
+  justify-content: space-between;
+}
+
+h1 {
+  font-weight: bold;
+}
+.nonbtn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}

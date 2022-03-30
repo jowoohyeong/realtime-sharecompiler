@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>BOARD</title>
+    <title>HOMEWORK</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
@@ -22,7 +22,11 @@
         background-color:#ddd;
         text-align: center;
     }
-    .btmLine{ display: flex; justify-content: space-between; }
+    .btmLine{
+        margin-top: 200px;
+        display: flex;
+        justify-content: space-between;
+    }
     .btn{
         height: 40px;
         margin-bottom: 20px;
@@ -33,7 +37,11 @@
         color: white;
         border: 3px solid gray;
     }
-    .nonbtn { background-color: transparent; border: none; cursor: pointer; }
+    .nonbtn {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+    }
     .cnt{ width: 45px; text-align: center;}
 </style>
 
@@ -41,9 +49,9 @@
     <div class='container'>
         <div class="group_nav">
             <h1>
-                <form action="/board" method="POST">
+                <form action="/homework" method="POST">
                     <input type="hidden" name="email" value=<%=post.email%>>
-                    <input type="submit" class="nonbtn" value="BOARD"style='font-weight:bold' id="board">
+                    <input type="submit" class="nonbtn" value="HOMEWORK"style='font-weight:bold' id="board">
                 </form>
             </h1>
         </div>
@@ -57,20 +65,21 @@
                     <th scope='col' class='date'>등록일</th>
                 </tr>
             </thead>
-            <!-- <input type ="number" value ="1" id="page"> -->
             <tbody>
+
                 <%
                 for(var i=0; i<list.length; i++){ 
                     var data=list[i];
-                    if(!data) break;
+                    //if(post.email !== data.email ){
+                        if(data.email!=="admin")    continue;
+                    //}   
+                    if(!data.email) break;
                 %>
                     <tr>
                         <td class='cnt'><%=list.length-i%></td>
                         <td>
                             <form action="/show" method="POST">
-                                
-                                <input type="hidden" name="cnt" value="<%=list.length-i%>">
-                                <input type="hidden" name="request" value="board">
+                                <input type="hidden" name="request" value="homework">
                                 <input type="hidden" name="title" value="<%=data.title%>">
                                 <input type="hidden" name="email" value=<%=data.email%>>
                                 <input type="hidden" name="user" value=<%=post.email%>>
@@ -84,42 +93,26 @@
                 <%}%>
             </tbody>
         </table>
-        
-        <div style="display:flex; gap:10px; justify-content:center">
-            <!-- <button id ="pre" class='nonbtn'>이전</button>
-            <%
-            console.log(list.length/10+1);
-            for(let i =1;i<=list.length/10+1;i++){
-            %>
-            <a class="num" href="/board?"+`<%=i%>`><%=i%></a>
-            <%}%>
-            <button id ="aft" class='nonbtn'>다음</button> -->
-        </div>
         <div class='btmLine'>
             <form action="/main" method="POST">
                 <input type="hidden" name="email" value=<%=post.email%>>
                 <input type="hidden" name="page" value="codemirror">
                 <input type="submit" value="home" class="btn">
-            </form>
-            <form action="/board/new" method="POST" >
+            </form>            
+        
+        <%
+            if(post.email==="admin"){
+        %>
+            <form action="/homework/new" method="POST" >
                 <input type="hidden" name="email" value=<%=post.email%>>
                 <input type="submit" value="글쓰기" class="btn">
             </form>
-            
+        <%}%>
         </div>
-
     </div>
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script>
-        $('#pre').on('click', function(){
-            let a= document.getElementById('page').value;
-            if(a*1===1)   return;
-            document.getElementById('page').value= a*1 - 1;
-            
-        });
-        // $('#aft').on('click', function(){
-        //     document.getElementById('page').value= document.getElementById('page').value*1 + 1;
-        // });
+        
     </script>
 </body>
 

@@ -3,69 +3,8 @@
     <title>READ</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
-</head>
-<style>
-  body {
-    font-family: 'Open Sans', sans-serif;
-    background: #ddd;
-  }
-  .container {
-    margin: auto;
-    width: 800px;
-    margin-top: 50px;
-  }
-  .breadcrumb-item {
-    font-size: 0.8em !important;
-  }
-  .ellipsis {
-    display: block;
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .board-table {
-    table-layout: fixed;
-  }
-  .board-table .date {
-    width: 100px;
-  }
-  .post-body {
-    white-space: pre-line;
-  }
-  .post-info {
-    font-size: 0.8em;
-  }
-  .btn {
-    height: 40px;
-    margin-bottom: 20px;
-    background: gray;
-    display: block;
-    text-align: center;
-
-    font-weight: bold;
-    color: white;
-    border: 3px solid gray;
-  }
-  .group_nav {
-    padding-top: 30px;
-    position: relative;
-    width: 100%;
-    height: 140px;
-    display: inline-block;
-    background-color: #ddd;
-    text-align: center;
-  }
-
-  .btmLine {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  h1 {
-    font-weight: bold;
-  }
-</style>
+    <link rel="stylesheet" href="../style/show.css">
+  </head>
 <body>
     <div class="container">
       <div class="group_nav">
@@ -73,7 +12,8 @@
       </div>
       <div class="form-group" style='display: block;'>
         <div>
-          <label style="float:right;">작성자 : <strong id='email'><%=post.email%></strong></label>
+          <label style="float:right;">/작성자 : <strong id='email'><%=post.email%></strong></label>
+          <label style="float:right;">접속자 : <strong id='user'><%=post.user%></strong></label>
         </div>
         <div id="title" name='title' style="font-weight: bold;"><%=post.title%></div>
       </div>
@@ -82,18 +22,18 @@
         <textarea id="body" name="body" rows="15" class="form-control" readonly><%=post.body%></textarea>
       </div>
       <div class='btmLine'>
-        <a class="btn" onclick="back()" style="color: white;">뒤로가기</a>
+        <a class="btn" onclick="location.href = 'javascript:history.back();'" style="color: white;">뒤로가기</a>
         <div style="display: flex;">
           <form action="/board/edit" method="post">
+            <input type="hidden" name="request" value="board">
+            <input type="hidden" name="user" value=<%=post.user%>>
             <input type="hidden" name="email" value=<%=post.email%>>
             <input type="hidden" name="title" value="<%=post.title%>">
             <input type="hidden" name="time" value=<%=post.time%>>
-            <input type="hidden" name="process" value="delete">
             <a class="btn" style="color: white;" onclick="check()?this.parentElement.submit():null;">수정</a>
           </form>
           <div style='width:10px'></div>
-          <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-          <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+          
           <form action="/board" method="post">
             <input type="hidden" name="user" value=<%=post.user%>>
             <input type="hidden" name="email" value=<%=post.email%>>
@@ -104,11 +44,9 @@
           </form>
         </div>
       </div>
-      <div style="visibility:hidden;" id='user'><%=post.user%></div>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+      <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
       <script>
-        function back() {
-          location.href = 'javascript:history.back();'
-        }
         function check() {
           let writer = $('#email').text()
           let user = $('#user').text();

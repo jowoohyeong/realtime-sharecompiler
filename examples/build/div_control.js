@@ -21,7 +21,7 @@ $('.resulttext').width(250);
 
         let left = e.clientX - frame.offsetLeft
         preclientX = e.clientX;
-        if ((right_width > 0) && (left > 399)) {
+        if ((right_width > 0) && (left > 599)) {
             let rightwidth = frame.clientWidth - handle.clientWidth - left;
             $('.codetext').width(left);
             $('.resulttext').width(rightwidth);

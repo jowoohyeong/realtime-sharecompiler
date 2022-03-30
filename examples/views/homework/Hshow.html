@@ -1,0 +1,118 @@
+<html>
+  <head>
+    <title>READ</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style/show.css">
+</head>
+<body>
+    <div class="container">
+      <div class="group_nav">
+        <h1>READ</h1>
+      </div>
+      <div class="form-group" style='display: block;'>
+        
+        <div>
+          <label style="float:right;">/작성자 : <strong id='writer'><%=post.email%></strong></label>
+          <label style="float:right;">접속자 : <strong id='user_id'><%=post.user%></strong></label>
+
+        </div>
+        <div id="title" name='title' style="font-weight: bold;"><%=post.title%></div>
+      </div>
+      
+      <div class="form-group">
+        <textarea id="body" name="body" rows="10" class="form-control" readonly><%=post.body%></textarea>
+      </div>
+      <div class='btmLine'>
+        <div style="display: flex; gap:10px;">
+          <a class="btn" onclick="location.href = 'javascript:history.back();'" style="color: white;">뒤로가기</a>
+          <form action="/compile" method="POST">
+            <input type="hidden" name="email" value=<%=post.user%>>
+            <input type="submit" class="btn" value="제출하기">
+          </form>
+        </div>
+        <div style="display: flex; gap:10px;">
+          <form action="/board/edit" method="post">
+            <input type="hidden" name="request" value="homework">
+            <input type="hidden" name="user" value=<%=post.user%>>
+            <input type="hidden" name="email" value=<%=post.email%>>
+            <input type="hidden" name="title" value="<%=post.title%>">
+            <input type="hidden" name="time" value=<%=post.time%>>
+            <a class="btn" style="color: white;" onclick="check()?this.parentElement.submit():null;">수정</a>
+          </form>          
+          <form action="/homework" method="post">
+            <input type="hidden" name="user" value=<%=post.user%>>
+            <input type="hidden" name="email" value=<%=post.email%>>
+            <input type="hidden" name="title" value="<%=post.title%>">
+            <input type="hidden" name="time" value=<%=post.time%>>
+            <input type="hidden" name="process" value="delete">
+            <a class="btn" style="color: white;" onclick="check()?(confirm('삭제하시겠습니까?')?this.parentElement.submit():null):null">삭제</a>            
+          </form>
+        </div>        
+      </div>
+      <input type="hidden" id="ContentObj"><br>
+      <strong style="font-size: 20px;margin-left: 20px;">제출자 명단</strong>
+      <div class="row">
+        <%
+        for(var i=0; i<list.length; i++){ 
+            var data=list[i];
+            if(post.user !== data.email ){
+              if(post.user!=="admin")    continue;
+            }  
+            if(!data) break;
+        %>
+          <div class="col-lg-4 col-md-6">
+            <a class='nonbtn' onclick="goSubmit(`<%=i%>`, `<%=data.title%>`,`<%=data.email%>`,`<%=post.email%>`, `<%=data.time%>`)" ><%=data.title%></a>
+          </div>
+        <%}%>
+      </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+      <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+      <script>
+        var openWin, postCon;
+        function goSubmit(cnt, title, email, user, time){
+          let url = 'http://localhost:8080/popup_content';
+          var data = {'title': title, 'email': email, 'user': user, 'time':time};
+          data = JSON.stringify(data);
+          var xhr = new XMLHttpRequest();
+          xhr.open('POST', url, true);            //server.js로 보내기
+          xhr.setRequestHeader('Content-type', 'application/json');
+          xhr.send(data);
+          let a = xhr.addEventListener('load', function () {
+            var result = JSON.parse(xhr.responseText);
+            if (result.result != 'ok') {
+              console.log("no_oK")
+              return false;
+            }else {
+              postCon = result.output;
+              document.getElementById('ContentObj').value=JSON.stringify(postCon);
+              window.name = "parentForm";
+              openWin = window.open('test2','childForm','width=800, height=700, toolbar=no, menubar=no, scrollbars=no, resizable=yes');
+              return true;
+            }
+          });
+        }
+        function setChildText(){
+          openWin.document.getElementById("checkthesound").value = postCon.title;
+          openWin.document.getElementById("two").value = postCon.body;
+        }
+        
+        function check() {
+          let writer = $('#writer').text()
+          let user = $('#user_id').text();
+          if (writer === user) return true;
+          else {
+            $().ready(function () {
+              Swal.fire({
+                icon: 'warning',
+                title: '권한이 없습니다.',
+                text: '아이디를 확인해주세요',
+              });
+            });
+            return false;
+          }
+        }
+      </script>
+</body>
+</html>

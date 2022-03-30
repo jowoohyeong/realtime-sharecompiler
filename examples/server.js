@@ -30,8 +30,44 @@ app.engine('html', require('ejs').renderFile);
 
 app.get('/', (req, res) => res.render("login.html"));
 app.get('/test', (rep, res) => res.render('test.html'))
-app.get('/test2', (rep, res) => res.render('test2.html'))
+
 app.get('/test4', (rep, res) => res.render('test4.html'))
+
+app.get('/test2', (req, res) => {
+  var body = "";
+  req.on('data', data => body += data);
+  req.on('end', function () {
+    var post = qs.parse(body);
+    var list = {"web":"과제확인"};
+    res.render('test2.html',{post:list});
+
+  });
+})
+app.delete('/_del', (req, res) =>{
+  var body = "";
+  req.on('data', data => body += data);
+  req.on('end', function () {
+    var post = JSON.parse(body);
+    Client.connect(mongodburl, function (error, client) {
+      if (error) throw error;
+      else {
+        var db = client.db('jsdb');
+        let query = {'email': post.email, 'title':post.title, "body": post.body}
+        db.collection('homework').deleteOne(query, (err, result) => {
+          if (err) throw err;
+          else {
+            console.log(result);
+            client.close();
+            
+            responseData = {'result': result};
+            res.json(responseData);
+          }
+        })
+      }
+    });
+
+  });
+})
 
 app.post('/main', (req, res) => {
   var body = "";
@@ -149,28 +185,6 @@ app.post('/board/new', (req, res) => {
     res.render('board/new.html', { post: post });
   });
 });
-app.post('/board/show', (req, res) => {
-  var body = "";
-  req.on('data', function (data){ body += data; });
-  req.on('end', function () {
-    var post = qs.parse(body);
-    Client.connect(mongodburl, function (error, client) {
-      if (error) throw error;
-      else {
-        var db = client.db('jsdb');
-        db.collection('board').findOne({"title": post.title, "email":post.email, "time":post.time }, (err, result) => {
-          if (err) throw err;
-          client.close();
-          let adduser = {user : post.user}
-          Object.assign(result, adduser);
-          res.render('board/show.html', { post: result });
-        });
-      }
-    });
-
-    
-  });
-});
 app.post('/board/edit', (req, res) => {
   var body = "";
   req.on('data', function (data){ body += data; });
@@ -184,16 +198,164 @@ app.post('/board/edit', (req, res) => {
         db.collection('board').findOne({"title": post.title, "email":post.email, "time":post.time }, (err, result) => {
           if (err) throw err;
           client.close();
+          let adduser = {user : post.user}
+          Object.assign(result, adduser);
 
-          res.render('board/edit.html', { post: result });
+          if(post.request === "board") res.render('board/edit.html', { post: result });
+          else if(post.request==="homework") res.render('homework/Hedit.html', { post: result });
         });
+      }
+    });
+  });
+});
+app.post('/show', (req, res) => {
+  var body = "";
+  req.on('data', function (data){ body += data; });
+  req.on('end', function () {
+    var post = qs.parse(body);
+    Client.connect(mongodburl, function (error, client) {
+      if (error) throw error;
+      else {
+        var db = client.db('jsdb');
+        
+        db.collection('board').findOne({"title": post.title, "email":post.email, "time":post.time }, (err, Bresult) => {
+          if (err) throw err;
+          client.close();
+          let adduser = {user : post.user}
+          Object.assign(Bresult, adduser);
+          if(post.request === "board") res.render('board/show.html', { post: Bresult });
+          else if(post.request==="homework"){             
+            var list;
+            Client.connect(mongodburl, function (error, client) {
+              if (error) throw error;
+              else {
+                var db = client.db('jsdb');
+                const cd = post.title.replace(/[^\d]/g, "");
+                db.collection('homework').find({"classdate": cd }).toArray(function(err, HWresult) {
+                  if (err) throw err;
+                  list = HWresult;
+                  client.close();
+                  res.render('homework/Hshow.html', { post: Bresult, list : list });
+
+                });
+              }
+            });
+          }
+          
+        });
+        
       }
     });
 
     
   });
 });
+app.post('/homework', (req, res) => {
+  var body = "";
+  req.on('data', function (data){ body += data; });
+  req.on('end', function () {
+    var post = qs.parse(body);
+    var list;
+    Client.connect(mongodburl, function (error, client) {
+      if (error) throw error;
+      else {
+        var db = client.db('jsdb');
+        db.collection('board').find({"email": "admin"}).sort({"timestring":-1}).toArray(function(err, result) {
+          if (err) throw err;
+          list = result;
+          client.close();
+          if(post.process==="new"){
+            let dt = new Date();
+            let mon = dt.getMonth() + 1;
+            let t = dt.getFullYear() + '-' + mon.toString().padStart(2, '0') + '-' + dt.getDate().toString().padStart(2, '0');
+            let title = post.title.replace(/ /g,'_');
+            var data = { 'email': post.email, 'title': title, 'body': post.body, 'time': t, 'timestring': dt};
 
+            Client.connect(mongodburl, function (error, client) {
+              if (error) throw error;
+              else {
+                var db = client.db('jsdb');
+                db.collection('board').insertOne(data, (err, result) => {
+                  if (err) throw err;
+                  else {
+                    client.close();
+                    res.render('homework/Hindex.html', {post: post, list:list});
+                  }
+                })
+              }
+            });
+          }
+          else if(post.process==="edit"){
+            Client.connect(mongodburl, function (error, client) {
+              if (error) throw error;
+              else {
+                var db = client.db('jsdb');
+                let term = { "email": post.email, "title":post.pretitle };
+                let title = post.title.replace(/ /g,'_');
+                var newvalues = { $set: {"title": title, "body": post.body} };
+                db.collection('board').updateOne(term, newvalues, (updataerr, result) => {
+                  if (updataerr) throw updataerr;
+                  client.close();
+                  post.email = post.user;
+                  res.render('homework/Hindex.html', {post: post, list:list});
+                })
+              }
+            });
+          }
+          else if(post.process==="delete"){
+            Client.connect(mongodburl, function (error, client) {
+              if (error) throw error;
+              else {
+                var db = client.db('jsdb');
+                let query = {'email': post.email, 'title':post.title, 'time': post.time}
+                db.collection('board').deleteOne(query, (err, result) => {
+                  if (err) throw err;
+                  else {
+                    client.close();
+                    res.render('homework/Hindex.html', {post: post, list:list});
+                  }
+                })
+              }
+            });
+          }
+          else{
+            removeUserlist(users, post.email);
+            res.render('homework/Hindex.html', { post: post , list: list});
+          }
+        });
+      }
+    });
+  });
+});
+app.post('/homework/new', (req, res) => {
+  var body = "";
+  req.on('data', function (data){ body += data; });
+  req.on('end', function () {
+    var post = qs.parse(body);
+    res.render('homework/Hnew.html', { post: post });
+  });
+});
+app.post('/popup_content', function (req, res) {
+  var body = "";
+  req.on('data', (data)=> { body += data; });
+  req.on('end', function () {
+    var post = JSON.parse(body);
+    Client.connect(mongodburl, function (error, client) {
+      if (error) throw error;
+      else {
+        var db = client.db('jsdb');
+        db.collection('homework').findOne({"title": post.title, "email":post.email, "time":post.time }, (err, result) => {
+          if (err) throw err;
+          
+          client.close();
+          responseData = { 'result': 'ok', 'output': result };
+          res.json(responseData);
+          
+        });
+      }
+    });
+  });
+});
 app.post('/del_process', (req, res) => {
   var body = "";
   req.on('data', data => body += data);
@@ -207,7 +369,6 @@ app.post('/del_process', (req, res) => {
     res.redirect('/');
   });
 });
-
 app.get('/signup', (req, res) => res.render('signup.html'));
 
 app.post('/signup_process', (req, res) => {
@@ -411,20 +572,39 @@ app.post('/compile/register', (req, res) => {      //코드저장
     let mon = dt.getMonth() + 1;
     let t = dt.getFullYear() + '-' + mon.toString().padStart(2, '0') + '-' + dt.getDate().toString().padStart(2, '0');
     let title = post.title.replace(/ /g,'_');
-    var data = { 'email': post.email, 'title': title, 'body': post.body, 'time': t , 'timestring': dt};
+    var data = { 'email': post.email, 'title': title, 'body': post.body, 'time': t , 'timestring': dt, "output": post.output};
 
-    Client.connect(mongodburl, function (error, client) {
-      if (error) throw error;
-      else {
-        var db = client.db('jsdb');
-        db.collection('board').insertOne(data, (err, result) => {
-          if (err) throw err;
-          else {
-            client.close();
-          }
-        })
-      }
-    });
+    if(post.process === "new"){
+      Client.connect(mongodburl, function (error, client) {
+        if (error) throw error;
+        else {
+          var db = client.db('jsdb');
+          db.collection('board').insertOne(data, (err, result) => {
+            if (err) throw err;
+            else client.close();
+          })
+        }
+      });
+    }
+    else if(post.process === "submit"){
+      Client.connect(mongodburl, function (error, client) {
+        if (error) throw error;
+        else {
+          const classdate = post.title.split("_");
+          let arr = {"classdate": classdate[0]}
+          Object.assign(data, arr);
+          var db = client.db('jsdb');
+          console.log(data);
+          db.collection('homework').insertOne(data, (err, result) => {
+            if (err) throw err;
+            else {
+              console.log(result);
+              client.close();
+            }
+          })
+        }
+      });
+    }
     
   });
 });

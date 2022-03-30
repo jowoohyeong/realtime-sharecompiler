@@ -5,7 +5,6 @@ require('codemirror/mode/clike/clike');
 require('codemirror/mode/javascript/javascript');
 require('codemirror/mode/python/python');
 var ShareDBCodeMirror = require('..');
-const e = require('cors');
 var StudyTF = false;
 
 $('#language').fadeOut(0.1);
@@ -65,6 +64,7 @@ document.getElementById('wrap').addEventListener('click', () => {
     $('#wrap').text("자동 줄바꿈 취소")
   }
 })
+console.log(editor)
 document.getElementById('language').addEventListener('change', (event) => {
   codeObj[curlang] = editor.getValue();
   editor.setValue(codeObj[language.value]);

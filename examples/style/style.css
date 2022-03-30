@@ -28,7 +28,7 @@ button.active {	background-color: deepskyblue; }
 .codetext{
 	display: block;
 	float: left;
-	min-width: 400px;
+	min-width: 600px;
 	height:100%;
 }
 .codetext_bar{

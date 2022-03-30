@@ -13,11 +13,16 @@ document.querySelector('.ajaxsend').addEventListener('click', function () {
 });
 document.querySelector('#register').addEventListener('click', function () {
     var title = prompt("글 제목을 입력하세요");
-    if (title !== null) sendAjaxWrite($('#user_id').text(), title, editor.getValue())
+    if (title !== null) sendAjaxWrite($('#user_id').text(), title, editor.getValue(), "new");
 });
-function sendAjaxWrite(email, title, body) {
+
+document.querySelector('#submit').addEventListener('click', function () {
+    var title = prompt("글 제목을 입력하세요\n양식 : 수업날짜_학번이름 \nex)1115_2016000000홍길동");
+    if (title !== null) sendAjaxWrite($('#user_id').text(), title, editor.getValue(), "submit", $('#output')[0].value);
+});
+function sendAjaxWrite(email, title, body, process, output) {
     let url = 'http://localhost:8080/compile/register';
-    var data = { 'email': email, 'title': title, 'body': body, 'process': "new" };
+    var data = { 'email': email, 'title': title, 'body': body, 'process': process, "output":output};
     data = JSON.stringify(data);
     var xhr = new XMLHttpRequest();
     xhr.open('POST', url, true);            //server.js로 보내기
@@ -45,10 +50,8 @@ function sendAjaxCode(code, lang, input) {
 }
 function sendAjaxSave(email, codeObj) {
     let url = 'http://localhost:8080/code_save';
-    console.log(email)
     var data = { 'email': email, 'codepackage': codeObj };
-
-    data = JSON.stringify(data);         //객체 ->문자열
+    data = JSON.stringify(data);     
     var xhr = new XMLHttpRequest();
     xhr.open('POST', url, true);
     xhr.setRequestHeader('Content-type', 'application/json');
@@ -95,3 +98,23 @@ function initializeCode() {
         'python': $("#python").text()
     }
 }
+// $(function () {
+//     var failMessage = function (text) {
+//         return alert(text + " 기능은 사용하실 수 없습니다."), false;
+//     },
+//     preventEvent = {
+//         "keydown": function (e) {
+//             var keycode = function (e) {
+//                 return ('which' in e ? e.which : e.keyCode)
+//             }(e),
+//             ctrl_v = (e.ctrlKey && (keycode == 86));
+//             if (ctrl_v) return failMessage("붙여넣기");
+//         }
+//         , "mousedown": function (e) {
+//             var rightClick = (e.button == 2);
+//             if (rightClick) return failMessage("우클릭");
+            
+//         }
+//     };
+//     $(document).bind(preventEvent);
+// }());
